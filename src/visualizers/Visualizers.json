@@ -1,0 +1,8 @@
+[
+  {
+    "id": "Visualizers",
+    "title": "Visualizers",
+    "panel": "panels/Visualizers/VisualizersPanel",
+    "DEBUG_ONLY": false
+  }
+]

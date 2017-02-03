@@ -1,0 +1,25 @@
+{
+  "components": {
+    "plugins": {
+      "CreateTopology": {
+        "src": "src/plugins/CreateTopology",
+        "test": "test/plugins/CreateTopology"
+      }
+    },
+    "addons": {},
+    "decorators": {},
+    "layouts": {},
+    "routers": {},
+    "seeds": {},
+    "visualizers": {}
+  },
+  "dependencies": {
+    "plugins": {},
+    "addons": {},
+    "decorators": {},
+    "layouts": {},
+    "routers": {},
+    "seeds": {},
+    "visualizers": {}
+  }
+}
