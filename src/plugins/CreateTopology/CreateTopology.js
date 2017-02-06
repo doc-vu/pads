@@ -112,19 +112,12 @@ define([
 
     CreateTopology.prototype.renderTopology = function () {
         // render docker compose file with federate type + shared folder name + command
+
+        //type = PubSubNetwork
         var self = this;
-        self.MobileHosts_listInfo = [];
 
-        self.Router_listInfo = [];
-        self.CSClientConnection_listInfo = [];
-
-        self.Client_listInfo =[];
-
-        self.Server_listInfo = [];
-
-        if (self.federationModel.MobileHost_list) {
-
-            self.federationModel.MobileHost_list.map((fed) => {
+        if(self.federationModel.SubConnection_list){
+            self.federationModel.SubConnection_list.map((fed) => {
                 self.MobileHosts_listInfo.push({
                     name: fed.name,
                     type: 'Mobile'
@@ -132,53 +125,72 @@ define([
             })
 
         }
-        if (self.federationModel.Router_list) {
-            self.federationModel.Router_list.map((fed) => {
-                self.Router_listInfo.push({
+        if(self.federationModel.BrokerConnection_list){
+            self.federationModel.MobileHost_list.map((fed) => {
+                self.MobileHosts_listInfo.push({
+                    name: fed.name,
+                    type: 'Mobile'
+                })
+            })
+        }
+        if(self.federationModel.PubConnection_list){
+            self.federationModel.MobileHost_list.map((fed) => {
+                self.MobileHosts_listInfo.push({
                     name: fed.name,
                     type: 'Mobile'
                 })
             })
         }
 
-        if (self.federationModel.CSClientConnection_list) {
-            self.federationModel.CSClientConnection_list.map((fed) => {
-                self.CSClientConnection_listInfo.push({
-                    name: fed.name,
-                    type: 'Mobile'
+        self.hostInfo = [];
+
+        if(self.federationModel.Broker_list){
+            self.federationModel.Broker_list.map((host) => {
+                self.hostInfo.push({
+                    name: host.name,
+                    type: 'Broker'
+                })
+            })
+        }
+        if(self.federationModel.Publisher_list){
+            self.federationModel.Publisher_list.map((host) => {
+                self.hostInfo.push({
+                    name: host.name,
+                    type: 'Publisher'
+                })
+            })
+        }
+        if(self.federationModel.Subscriber_list){
+            self.federationModel.Subscriber_list.map((host) => {
+                self.hostInfo.push({
+                    name: host.name,
+                    type: 'Subscriber'
+                })
+            })
+        }
+        self.switchInfo = [];
+        if(self.federationModel.Switch_list){
+            self.federationModel.Switch_list.map((host) => {
+                self.switchInfo.push({
+                    name: host.name,
+                    type: 'Switch'
                 })
             })
         }
 
-        if (self.federationModel.Server_list) {
-            self.federationModel.Server_list.map((fed) => {
-                self.Server_listInfo.push({
-                    name: fed.name,
-                    type: 'Mobile'
-                })
-            })
-        }
-
-        if (self.federationModel.Client_list) {
-            self.federationModel.Client_list.map((fed) => {
-                self.Client_listInfo.push({
-                    name: fed.name,
-                    type: 'Mobile'
-                })
-            })
-        }
+        console.log(self.switchInfo)
+        console.log(self.hostInfo)
 
         self.topologyFileData = ejs.render(
             TEMPLATES['topologyFileTemplate.ejs'],
             {
-                Server_listInfo: self.Server_listInfo,
-                Client_listInfo: self.Client_listInfo,
-                CSClientConnection_listInfo: self.CSClientConnection_listInfo,
-                Router_listInfo: self.Router_listInfo,
-                MobileHosts_listInfo: self.MobileHosts_listInfo
+                hostInfo: self.hostInfo,
+                switchInfo: self.switchInfo
+
             }
         );
-
+        var x =[];
+        //
         var path = require('path'),
             filendir = require('filendir'),
             fileName = 'topology.py';

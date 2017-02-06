@@ -24,28 +24,13 @@ class simpleMultiLinkTopo( Topo ):
     def __init__( self, n, **kwargs ):
         Topo.__init__( self, **kwargs )
 
-        <%
-        fedInfos.map(function(fedInfo) {
-                -%>
-        <%- fedInfo.type %>_<%- fedInfo.name %>:
-        build: .
-        image: "<%- dockerInfoMap[fedInfo.type].name %>:<%- dockerInfoMap[fedInfo.type].tag %>"
-        command: "sh start.sh <%- fedInfo.type %>,<%- fedInfo.name %>"
-        extra_hosts:
-        - "cpswtng_archiva:10.0.2.15"
-        volumes:
-        - <%- inputPrefix %>/<%- fedInfo.name %>:/root/Projects/c2wt/input
-        - <%- outputPrefix %>/<%- fedInfo.name %>:/root/Projects/c2wt/logs
-        <%
-        })
-        -%>
+    <% hostInfo.map(function(host) {  -%>
+    <%- host.name %> = self.addHost('<%- host.name %>')
+    <% }) -%>
 
-        h1, h2 = self.addHost( 'h1' ), self.addHost( 'h2' )
-        s1 = self.addSwitch( 's1' )
-
-        for _ in range( n ):
-            self.addLink( s1, h1 )
-            self.addLink( s1, h2 )
+    <% switchInfo.map(function(entry) { -%>
+    <%- entry.name %> = self.addSwitch('<%- entry.name %>')
+    <% }) -%>
 
 if __name__ == '__main__':
     setLogLevel( 'info' )
