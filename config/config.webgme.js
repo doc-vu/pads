@@ -22,7 +22,7 @@ config.visualization.decoratorPaths.push('./src/decorators');
 
 // Add requirejs paths
 config.requirejsPaths['pads_app'] = './src/common';
-
+config.requirejsPaths['CreateTopology'] = './src/plugins/CreateTopology';
 
 
 

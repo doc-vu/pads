@@ -13,14 +13,16 @@ define([
     'plugin/PluginBase',
     'common/util/ejs',
     'pads_app/modelLoader',
-    'q'
-], function (
-    PluginConfig,
-    pluginMetadata,
-    PluginBase,
-    ejs,
-    loader,
-    Q) {
+    'q',
+    'CreateTopology/Templates/Templates',
+
+], function (PluginConfig,
+             pluginMetadata,
+             PluginBase,
+             ejs,
+             loader,
+             Q,
+             TEMPLATES) {
     'use strict';
 
     pluginMetadata = JSON.parse(pluginMetadata);
@@ -50,28 +52,180 @@ define([
     CreateTopology.prototype.constructor = CreateTopology;
 
 
-    CreateTopology.prototype.notify = function(level, msg) {
+    CreateTopology.prototype.notify = function (level, msg) {
         var self = this;
         var prefix = self.projectId + '::' + self.projectName + '::' + level + '::';
         var max_msg_len = 100;
-        if (level=='error')
+        if (level == 'error')
             self.logger.error(msg);
-        else if (level=='debug')
+        else if (level == 'debug')
             self.logger.debug(msg);
-        else if (level=='info')
+        else if (level == 'info')
             self.logger.info(msg);
-        else if (level=='warning')
+        else if (level == 'warning')
             self.logger.warn(msg);
         self.createMessage(self.activeNode, msg, level);
         if (msg.length < max_msg_len)
-            self.sendNotification(prefix+msg);
+            self.sendNotification(prefix + msg);
         else {
             var splitMsgs = utils.chunkString(msg, max_msg_len);
-            splitMsgs.map(function(splitMsg) {
-                self.sendNotification(prefix+splitMsg);
+            splitMsgs.map(function (splitMsg) {
+                self.sendNotification(prefix + splitMsg);
             });
         }
     };
+
+    CreateTopology.prototype.convertNode = function (node) {
+        var attrs = this.core.getAttributeNames(node);
+        // TODO
+        if (!this.core.getBaseType(node)) debugger;
+        // console.log('node is', node)
+        return {
+            name: this.core.getAttribute(node, 'name'),
+            type: this.core.getAttribute(this.core.getBaseType(node), 'name')
+        };
+    };
+
+    CreateTopology.prototype.generateDataModel = function (modelNode) {
+        var self = this,
+            //deferred = new Q.defer(),
+            dataModel = {}
+
+        return self.core.loadSubTree(modelNode)
+            .then(function (nodes) {
+                // Convert the nodes to the desired structure for the template
+                // TODO
+                return nodes.map(function (node) {
+                    return self.convertNode(node);
+                });
+            });
+    };
+
+
+    CreateTopology.prototype.generateFiles = function (nodes) {
+        console.log('generating files...')
+        console.log(nodes)
+        // Use the datamodel to generate any artifacts from templates
+        // TODO
+        return '';
+    };
+
+    CreateTopology.prototype.renderTopology = function () {
+        // render docker compose file with federate type + shared folder name + command
+        var self = this;
+        self.MobileHosts_listInfo = [];
+
+        self.Router_listInfo = [];
+        self.CSClientConnection_listInfo = [];
+
+        self.Client_listInfo =[];
+
+        self.Server_listInfo = [];
+
+        if (self.federationModel.MobileHost_list) {
+
+            self.federationModel.MobileHost_list.map((fed) => {
+                self.MobileHosts_listInfo.push({
+                    name: fed.name,
+                    type: 'Mobile'
+                })
+            })
+
+        }
+        if (self.federationModel.Router_list) {
+            self.federationModel.Router_list.map((fed) => {
+                self.Router_listInfo.push({
+                    name: fed.name,
+                    type: 'Mobile'
+                })
+            })
+        }
+
+        if (self.federationModel.CSClientConnection_list) {
+            self.federationModel.CSClientConnection_list.map((fed) => {
+                self.CSClientConnection_listInfo.push({
+                    name: fed.name,
+                    type: 'Mobile'
+                })
+            })
+        }
+
+        if (self.federationModel.Server_list) {
+            self.federationModel.Server_list.map((fed) => {
+                self.Server_listInfo.push({
+                    name: fed.name,
+                    type: 'Mobile'
+                })
+            })
+        }
+
+        if (self.federationModel.Client_list) {
+            self.federationModel.Client_list.map((fed) => {
+                self.Client_listInfo.push({
+                    name: fed.name,
+                    type: 'Mobile'
+                })
+            })
+        }
+
+        self.topologyFileData = ejs.render(
+            TEMPLATES['topologyFileTemplate.ejs'],
+            {
+                Server_listInfo: self.Server_listInfo,
+                Client_listInfo: self.Client_listInfo,
+                CSClientConnection_listInfo: self.CSClientConnection_listInfo,
+                Router_listInfo: self.Router_listInfo,
+                MobileHosts_listInfo: self.MobileHosts_listInfo
+            }
+        );
+
+        var path = require('path'),
+            filendir = require('filendir'),
+            fileName = 'topology.py';
+
+        var basePath = process.cwd();
+
+        var deferred = Q.defer();
+        filendir.writeFile(path.join(basePath, fileName), self.topologyFileData, function(err) {
+            if (err){
+                console.error("not able to create the file")
+                deferred.reject(err);
+            }
+
+            else{
+                console.log("done writing file to", path.join(basePath,fileName) )
+                deferred.resolve();
+
+            }
+
+
+        });
+        return deferred.promise;
+
+        // return self.federationModel;
+        // self.dockerFileData = ejs.render(
+        //     TEMPLATES['topologyFileTemplate.ejs'],
+        //     {
+        //         inputPrefix: self.inputPrefix,
+        //         outputPrefix: self.outputPrefix,
+        //         fedInfos: self.fedInfos,
+        //         dockerInfoMap: self.dockerInfoMap
+        //     }
+        // );
+        // var path = require('path'),
+        //     filendir = require('filendir'),
+        //     fileName = 'docker-compose.yml';
+        //
+        // var deferred = Q.defer();
+        // filendir.writeFile(path.join(self.basePath, fileName), self.dockerFileData, function (err) {
+        //     if (err)
+        //         deferred.reject(err);
+        //     else
+        //         deferred.resolve();
+        // });
+        // return deferred.promise;
+    };
+
 
     /**
      * Main function for the plugin to execute. This will perform the execution.
@@ -95,85 +249,58 @@ define([
             callback(new Error(msg), self.result);
         }
 
-        // Using the logger.
-        // self.logger.debug('This is a debug message.');
-        // self.logger.info('This is an info message.');
-        // self.logger.warn('This is a warning message.');
-        // self.logger.error('This is an error message.');
-
         // Using the coreAPI to make changes.
         // nodeObject = self.activeNode;
 
         var currentConfig = self.getCurrentConfig();
 
-        // self.deploymentFiles = currentConfig.deploymentFiles;
-        // self.runLocally = currentConfig.runLocally;
         self.projectName = self.core.getAttribute(self.rootNode, 'name');
-
         var modelNode = self.activeNode;
         self.modelName = self.core.getAttribute(modelNode, 'name');
 
-        var path = require('path');
-        var filendir = require('filendir');
-        self.root_dir = path.join(process.cwd(),
-            'generated',
-            self.project.projectId,
-            self.branchName,
-            'models');
-
-        return loader.loadModel(self.core, modelNode)
-            .then(function(federationModel) {
-                self.federationModel = federationModel;
-            })
-            .then(function() {
-                return self.renderDockerFile();
-            })
-            .then(function() {
-                return self.renderStartScript();
-            })
-            .then(function() {
-                return self.createInputsFolder();
-            })
-            .then(function() {
-                return self.writeInputs();
-            })
-            .then(function() {
-                return self.runSimulation();
-            })
-            .then(function() {
-                return self.copyArtifacts();
-            })
-            .then(function() {
-                self.result.success = true;
-                self.notify('info', 'Simulation Complete.');
-                callback(null, self.result);
-            })
-            .catch(function(err) {
-                self.notify('error', err);
-                self.result.success = false;
-                callback(err, self.result);
-            });
-
-
-
-
-
-        // self.core.setAttribute(nodeObject, 'name', 'My new obj');
-        // self.core.setRegistry(nodeObject, 'position', {x: 70, y: 70});
-
-        // This will save the changes. If you don't want to save;
-        // exclude self.save and call callback directly from this scope.
-        // self.save('CreateTopology updated model.')
+        // self.generateDataModel(self.activeNode)  // Convert subtree to template-friendly format
+        //     .then(function (dataModel) {
+        //         self.logger.info('Converted subtree to temp[late-friendcly forfamat');
+        //         self.logger.info(JSON.stringify(dataModel, null, 4));
+        //         return self.generateFiles(dataModel);
+        //     })
         //     .then(function () {
+        //         // TODO: Add the files as an artifact
         //         self.result.setSuccess(true);
         //         callback(null, self.result);
         //     })
         //     .catch(function (err) {
-        //         // Result success is false at invocation.
-        //         callback(err, self.result);
-        //     });
+        //         self.logger.error(err);
+        //         self.createMessage(null, err.message, 'error');
+        //         self.result.setSuccess(false);
+        //         callback(null, self.result);
+        //     })
+        //     .done();
 
+
+        return loader.loadModel(self.core, modelNode)
+            .then(function (federationModel) {
+                console.log(federationModel)
+                self.federationModel = federationModel;
+            })
+            .then(function() {
+                return self.renderTopology();
+            })
+            // .then(function() {
+            //     return self.copyArtifacts();
+            // })
+            .then(function () {
+                self.result.success = true;
+                self.notify('info', 'Simulation Complete.');
+                callback(null, self.result);
+            })
+            .catch(function (err) {
+                self.notify('error', err);
+                self.result.success = false;
+                callback(err, self.result);
+            });
     };
 
     return CreateTopology;
-});
+})
+;
