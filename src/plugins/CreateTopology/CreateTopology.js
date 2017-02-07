@@ -146,6 +146,76 @@ define([
             })
         }
 
+
+        self.AppHostList = {};
+
+        self.hostInfo = [];
+        if(self.pads_datamodel.Host_list){
+            self.pads_datamodel.Host_list.map((m_host) => {
+                // self.hostAppList[m_host.path] = [];
+
+                self.hostInfo.push({
+                    name: m_host.name,
+                    type: m_host.type,
+                    app_path: []
+                })
+            })
+        }
+
+
+        //! Make Sure to Call this after we have a host list
+        if(self.pads_datamodel.PubConnection_list){
+            self.pads_datamodel.PubConnection_list.map((m_pubLink) => {
+                // self.hostAppList[m_pubLink.dst.path].push(m_pubLink.src.path);
+                self.AppHostList[m_pubLink.src.path] =m_pubLink.dst.name;
+                // self.nodeLink_listInfo.push({
+                //     name: m_hostswitchlink.name,
+                //     type: m_hostswitchlink.type,
+                //     // src: m_switchlink.src.path,
+                //     // dst: m_switchlink.dst.path
+                //     src_name: m_hostswitchlink.src.name,
+                //     dst_name: m_hostswitchlink.dst.name
+                // })
+            })
+        }
+
+        //! Make Sure to Call this after we have a host list
+        if(self.pads_datamodel.BrokerConnection_list){
+            self.pads_datamodel.BrokerConnection_list.map((m_brokLink) => {
+                // self.hostAppList[m_brokLink.dst.path].push(m_brokLink.src.path);
+                self.AppHostList[m_brokLink.src.path] =m_brokLink.dst.name;
+                // self.nodeLink_listInfo.push({
+                //     name: m_hostswitchlink.name,
+                //     type: m_hostswitchlink.type,
+                //     // src: m_switchlink.src.path,
+                //     // dst: m_switchlink.dst.path
+                //     src_name: m_hostswitchlink.src.name,
+                //     dst_name: m_hostswitchlink.dst.name
+                // })
+            })
+        }
+
+
+        //! Make Sure to Call this after we have a host list
+        if(self.pads_datamodel.SubConnection_list){
+            self.pads_datamodel.SubConnection_list.map((m_subLink) => {
+                self.AppHostList[m_subLink.src.path] = m_subLink.dst.name;
+                //
+                // self.nodeLink_listInfo.push({
+                //     name: m_hostswitchlink.name,
+                //     type: m_hostswitchlink.type,
+                //     // src: m_switchlink.src.path,
+                //     // dst: m_switchlink.dst.path
+                //     src_name: m_hostswitchlink.src.name,
+                //     dst_name: m_hostswitchlink.dst.name
+                // })
+
+
+            })
+        }
+
+
+
         // if(self.pads_datamodel.BrokerConnection_list){
         //     self.pads_datamodel.MobileHost_list.map((fed) => {
         //         self.MobileHosts_listInfo.push({
@@ -163,33 +233,42 @@ define([
         //     })
         // }
 
-        self.hostInfo = [];
-
         self.brokerInfo = []
-        if(self.pads_datamodel.Broker_list){
-            self.pads_datamodel.Broker_list.map((m_broker) => {
+        if(self.pads_datamodel.BrokerApp_list){
+            self.pads_datamodel.BrokerApp_list.map((m_broker) => {
                 self.brokerInfo.push({
                     name: m_broker.name,
-                    type: m_broker.type
+                    type: m_broker.type,
+                    path:m_broker.path,
+                    scriptName: m_broker.FileName,
+                    args: m_broker.args
                 })
             })
         }
         self.publisherInfo = []
-        if(self.pads_datamodel.Publisher_list){
-            self.pads_datamodel.Publisher_list.map((m_pub) => {
+        if(self.pads_datamodel.PublisherApp_list){
+            self.pads_datamodel.PublisherApp_list.map((m_pub) => {
                 self.publisherInfo.push({
                     name: m_pub.name,
-                    type: m_pub.type
+                    type: m_pub.type,
+                    path: m_pub.path,
+                    scriptName: m_pub.FileName,
+                    args: m_pub.args
                 })
             })
         }
 
+
         self.subscriberInfo = []
-        if(self.pads_datamodel.Subscriber_list){
-            self.pads_datamodel.Subscriber_list.map((m_sub) => {
+        if(self.pads_datamodel.SubscriberApp_list){
+            self.pads_datamodel.SubscriberApp_list.map((m_sub) => {
                 self.subscriberInfo.push({
                     name: m_sub.name,
-                    type:m_sub.type
+                    type:m_sub.type,
+                    path: m_sub.path,
+                    scriptName: m_sub.FileName,
+                    args: m_sub.args,
+
                 })
             })
         }
@@ -203,16 +282,6 @@ define([
             })
         }
 
-
-        self.hostInfo = [];
-        if(self.pads_datamodel.Host_list){
-            self.pads_datamodel.Host_list.map((m_host) => {
-                self.hostInfo.push({
-                    name: m_host.name,
-                    type: m_host.type
-                })
-            })
-        }
 
 
         console.log(self.switchInfo)
@@ -235,16 +304,16 @@ define([
             }
         );
 
-        self.topologyFileData = ejs.render(
+        self.commandFileData = ejs.render(
             TEMPLATES['commandFileTemplate.ejs'],
             {
                 hostInfo: self.hostInfo,
                 switchInfo: self.switchInfo,
                 brokerInfo: self.brokerInfo,
                 publisherInfo : self.publisherInfo,
-                subsciberInfo: self.subscriberInfo,
-                nodeLink_listInfo: self.nodeLink_listInfo
-
+                subscriberInfo: self.subscriberInfo,
+                nodeLink_listInfo: self.nodeLink_listInfo,
+                AppHostList: self.AppHostList
             }
         );
 

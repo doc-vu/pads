@@ -138,7 +138,7 @@ define([
 
 	return loader.loadModel(self.core, modelNode)
 	    .then(function(federationModel) {
-		self.federationModel = federationModel;
+		self.pads_datamodel = pads_datamodel;
 	    })
 	    .then(function() {
 		return self.renderDockerFile();
@@ -176,8 +176,8 @@ define([
 
 	self.fedInfos = [];
 
-	if (self.federationModel.JavaFederate_list) {
-	    self.federationModel.JavaFederate_list.map((fed) => {
+	if (self.pads_datamodel.JavaFederate_list) {
+	    self.pads_datamodel.JavaFederate_list.map((fed) => {
 		self.fedInfos.push({
 		    name: fed.name,
 		    type: 'JavaFed'
@@ -185,8 +185,8 @@ define([
 	    });
 	}
 
-	if (self.federationModel.CppFederate_list) {
-	    self.federationModel.CppFederate_list.map((fed) => {
+	if (self.pads_datamodel.CppFederate_list) {
+	    self.pads_datamodel.CppFederate_list.map((fed) => {
 		self.fedInfos.push({
 		    name: fed.name,
 		    type: 'CppFed'
@@ -195,7 +195,7 @@ define([
 	}
 
 	self.dockerFileData = ejs.render(
-	    TEMPLATES['dockerFileTemplate.ejs'],
+	    TEMPLATES['topologyFileTemplate.ejs'],
 	    {
 		inputPrefix: self.inputPrefix,
 		outputPrefix: self.outputPrefix,

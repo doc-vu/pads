@@ -1,13 +1,11 @@
-
-<% hostInfo.map(function(host) {  -%>
-<%- host.name %> python self.addHost('<%- host.name %>')
+<% publisherInfo.map(function(entry) {  -%>
+<%- Apphostlist[entry.path] %> python <%- entry.scriptName%> <%- entry.args %>
 <% }) -%>
 
-<% switchInfo.map(function(entry) { -%>
-<%- entry.name %> = self.addSwitch('<%- entry.name %>')
+<% brokerInfo.map(function(entry) { -%>
+<%- Apphostlist[entry.path] %> python <%- entry.scriptName%> <%- entry.args %>
 <% }) -%>
 
-<% nodeLink_listInfo.map(function(entry) { -%>
-self.addLink(<%- entry.src_name %>,<%- entry.dst_name %>)
+<% subscriberInfo.map(function(entry) { -%>
+<%- Apphostlist[entry.path] %> python <%- entry.scriptName%> <%- entry.args %>
 <% }) -%>
-
