@@ -33,7 +33,7 @@ class simpleMultiLinkTopo( Topo ):
     <% }) -%>
 
     <% nodeLink_listInfo.map(function(entry) { -%>
-    self.addLink(<%- entry.src_name %>,<%- entry.dst_name %>)
+    self.addLink(<%- entry.src_name %>,<%- entry.dst_name %>,bw=<%- entry.Bandwidth_Mbps%>, delay ='<%- entry.Delay_ms%>ms' , loss=<%- entry.Loss%>)
     <% }) -%>
 
 if __name__ == '__main__':

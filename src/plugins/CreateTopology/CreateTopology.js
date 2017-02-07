@@ -155,6 +155,9 @@ define([
         //type = PubSubNetwork
         var self = this;
 
+
+
+
         self.nodeLink_listInfo = []
         if(self.pads_datamodel.SwitchSwitchConnection_list){
             self.pads_datamodel.SwitchSwitchConnection_list.map((m_switchlink) => {
@@ -163,6 +166,11 @@ define([
                     type: m_switchlink.type,
                     src_name: m_switchlink.src.name,
                     dst_name: m_switchlink.dst.name,
+                    Bandwidth_Mbps: m_switchlink.Bandwidth_Mbps,
+                    Delay_ms:m_switchlink.Delay_ms,
+                    Loss:m_switchlink.Loss
+
+
                 })
             })
         }
@@ -173,7 +181,10 @@ define([
                     name: m_hostswitchlink.name,
                     type: m_hostswitchlink.type,
                     src_name: m_hostswitchlink.src.name,
-                    dst_name: m_hostswitchlink.dst.name
+                    dst_name: m_hostswitchlink.dst.name,
+                    Bandwidth_Mbps: m_hostswitchlink.Bandwidth_Mbps,
+                    Delay_ms:m_hostswitchlink.Delay_ms,
+                    Loss:m_hostswitchlink.Loss
                 })
             })
         }
