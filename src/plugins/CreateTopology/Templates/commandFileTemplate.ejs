@@ -1,11 +1,11 @@
 <% publisherInfo.map(function(entry) {  -%>
-<%- Apphostlist[entry.path] %> python <%- entry.scriptName%> <%- entry.args %>
+<%- AppHostList[entry.path] %> python <%- entry.scriptName%> <%- entry.args %> &
 <% }) -%>
 
 <% brokerInfo.map(function(entry) { -%>
-<%- Apphostlist[entry.path] %> python <%- entry.scriptName%> <%- entry.args %>
+<%- AppHostList[entry.path] %> python <%- entry.scriptName%> <%- entry.args %> &
 <% }) -%>
 
 <% subscriberInfo.map(function(entry) { -%>
-<%- Apphostlist[entry.path] %> python <%- entry.scriptName%> <%- entry.args %>
+<%- AppHostList[entry.path] %> python <%- entry.scriptName%> <%- entry.args %> &
 <% }) -%>

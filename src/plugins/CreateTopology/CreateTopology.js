@@ -75,6 +75,8 @@ define([
         }
     };
 
+
+
     CreateTopology.prototype.convertNode = function (node) {
         var attrs = this.core.getAttributeNames(node);
         // TODO
@@ -110,14 +112,48 @@ define([
         return '';
     };
 
+    CreateTopology.prototype.generateArtifacts = function() {
+
+        var self = this,
+            filesToAdd = {},
+            deferred = new Q.defer(),
+
+            artifact = self.blobClient.createArtifact('GeneratedFiles');
+
+            filesToAdd['metadata.json'] = JSON.stringify({
+                timeStamp: (new Date()).toISOString(),
+            }, null, 2);
+
+            filesToAdd['topology.py'] = self.topologyFileData;
+
+            filesToAdd['command.txt'] = self.commandFileData
+
+
+        artifact.addFiles(filesToAdd, function (err) {
+                if (err) {
+                    deferred.reject(new Error(err));
+                    return;
+                }
+                self.blobClient.saveAllArtifacts(function (err, hashes) {
+                    if (err) {
+                        deferred.reject(new Error(err));
+                        return;
+                    }
+
+                    self.result.addArtifact(hashes[0]);
+                    deferred.resolve();
+                });
+            });
+
+            return deferred.promise;
+
+    };
+
     CreateTopology.prototype.renderTopology = function () {
         // render docker compose file with federate type + shared folder name + command
 
         //type = PubSubNetwork
         var self = this;
-
-
-
 
         self.nodeLink_listInfo = []
         if(self.pads_datamodel.SwitchSwitchConnection_list){
@@ -125,8 +161,6 @@ define([
                 self.nodeLink_listInfo.push({
                     name: m_switchlink.name,
                     type: m_switchlink.type,
-                    // src: m_switchlink.src.path,
-                    // dst: m_switchlink.dst.path
                     src_name: m_switchlink.src.name,
                     dst_name: m_switchlink.dst.name,
                 })
@@ -138,8 +172,6 @@ define([
                 self.nodeLink_listInfo.push({
                     name: m_hostswitchlink.name,
                     type: m_hostswitchlink.type,
-                    // src: m_switchlink.src.path,
-                    // dst: m_switchlink.dst.path
                     src_name: m_hostswitchlink.src.name,
                     dst_name: m_hostswitchlink.dst.name
                 })
@@ -152,8 +184,6 @@ define([
         self.hostInfo = [];
         if(self.pads_datamodel.Host_list){
             self.pads_datamodel.Host_list.map((m_host) => {
-                // self.hostAppList[m_host.path] = [];
-
                 self.hostInfo.push({
                     name: m_host.name,
                     type: m_host.type,
@@ -166,32 +196,14 @@ define([
         //! Make Sure to Call this after we have a host list
         if(self.pads_datamodel.PubConnection_list){
             self.pads_datamodel.PubConnection_list.map((m_pubLink) => {
-                // self.hostAppList[m_pubLink.dst.path].push(m_pubLink.src.path);
                 self.AppHostList[m_pubLink.src.path] =m_pubLink.dst.name;
-                // self.nodeLink_listInfo.push({
-                //     name: m_hostswitchlink.name,
-                //     type: m_hostswitchlink.type,
-                //     // src: m_switchlink.src.path,
-                //     // dst: m_switchlink.dst.path
-                //     src_name: m_hostswitchlink.src.name,
-                //     dst_name: m_hostswitchlink.dst.name
-                // })
             })
         }
 
         //! Make Sure to Call this after we have a host list
         if(self.pads_datamodel.BrokerConnection_list){
             self.pads_datamodel.BrokerConnection_list.map((m_brokLink) => {
-                // self.hostAppList[m_brokLink.dst.path].push(m_brokLink.src.path);
                 self.AppHostList[m_brokLink.src.path] =m_brokLink.dst.name;
-                // self.nodeLink_listInfo.push({
-                //     name: m_hostswitchlink.name,
-                //     type: m_hostswitchlink.type,
-                //     // src: m_switchlink.src.path,
-                //     // dst: m_switchlink.dst.path
-                //     src_name: m_hostswitchlink.src.name,
-                //     dst_name: m_hostswitchlink.dst.name
-                // })
             })
         }
 
@@ -200,38 +212,8 @@ define([
         if(self.pads_datamodel.SubConnection_list){
             self.pads_datamodel.SubConnection_list.map((m_subLink) => {
                 self.AppHostList[m_subLink.src.path] = m_subLink.dst.name;
-                //
-                // self.nodeLink_listInfo.push({
-                //     name: m_hostswitchlink.name,
-                //     type: m_hostswitchlink.type,
-                //     // src: m_switchlink.src.path,
-                //     // dst: m_switchlink.dst.path
-                //     src_name: m_hostswitchlink.src.name,
-                //     dst_name: m_hostswitchlink.dst.name
-                // })
-
-
             })
         }
-
-
-
-        // if(self.pads_datamodel.BrokerConnection_list){
-        //     self.pads_datamodel.MobileHost_list.map((fed) => {
-        //         self.MobileHosts_listInfo.push({
-        //             name: fed.name,
-        //             type: 'Mobile'
-        //         })
-        //     })
-        // }
-        // if(self.pads_datamodel.PubConnection_list){
-        //     self.pads_datamodel.MobileHost_list.map((fed) => {
-        //         self.MobileHosts_listInfo.push({
-        //             name: fed.name,
-        //             type: 'Mobile'
-        //         })
-        //     })
-        // }
 
         self.brokerInfo = []
         if(self.pads_datamodel.BrokerApp_list){
@@ -260,8 +242,8 @@ define([
 
 
         self.subscriberInfo = []
-        if(self.pads_datamodel.SubscriberApp_list){
-            self.pads_datamodel.SubscriberApp_list.map((m_sub) => {
+        if(self.pads_datamodel.SubsriberApp_list){
+            self.pads_datamodel.SubsriberApp_list.map((m_sub) => {
                 self.subscriberInfo.push({
                     name: m_sub.name,
                     type:m_sub.type,
@@ -283,14 +265,6 @@ define([
         }
 
 
-
-        console.log(self.switchInfo)
-        console.log(self.hostInfo)
-        console.log(self.brokerInfo)
-        console.log(self.subscriberInfo)
-        console.log(self.publisherInfo)
-
-
         self.topologyFileData = ejs.render(
             TEMPLATES['topologyFileTemplate.ejs'],
             {
@@ -298,7 +272,7 @@ define([
                 switchInfo: self.switchInfo,
                 brokerInfo: self.brokerInfo,
                 publisherInfo : self.publisherInfo,
-                subsciberInfo: self.subscriberInfo,
+                subscriberInfo: self.subscriberInfo,
                 nodeLink_listInfo: self.nodeLink_listInfo
 
             }
@@ -316,54 +290,48 @@ define([
                 AppHostList: self.AppHostList
             }
         );
+        var topowrite = function() {
 
-        var x =[];
-        //
-        var path = require('path'),
-            filendir = require('filendir'),
-            fileName = 'topology.py';
+            var path = require('path'),
+                filendir = require('filendir'),
+                fileName = 'topology.py'
+            var basePath = process.cwd();
+            var deferred = Q.defer();
+            filendir.writeFile(path.join(basePath, fileName), self.topologyFileData, function(err) {
+                if (err){
+                    console.error("not able to create the file")
+                    deferred.reject(err);
+                }
+                else{
+                    console.log("done writing file to", path.join(basePath,fileName) )
+                    deferred.resolve();
+                }
+            });
+            return deferred.promise;
+        };
 
-        var basePath = process.cwd();
+        var commandwrite = function() {
 
-        var deferred = Q.defer();
-        filendir.writeFile(path.join(basePath, fileName), self.topologyFileData, function(err) {
-            if (err){
-                console.error("not able to create the file")
-                deferred.reject(err);
-            }
+            var path = require('path'),
+                filendir = require('filendir'),
+                fileName = 'command.txt'
+            var basePath = process.cwd();
+            var deferred = Q.defer();
+            filendir.writeFile(path.join(basePath, fileName), self.commandFileData, function(err) {
+                if (err){
+                    console.error("not able to create the file")
+                    deferred.reject(err);
+                }
+                else{
+                    console.log("done writing file to", path.join(basePath,fileName) )
+                    deferred.resolve();
+                }
+            });
+            return deferred.promise;
+        };
 
-            else{
-                console.log("done writing file to", path.join(basePath,fileName) )
-                deferred.resolve();
-
-            }
-
-
-        });
-        return deferred.promise;
-
-        // return self.pads_datamodel;
-        // self.dockerFileData = ejs.render(
-        //     TEMPLATES['topologyFileTemplate.ejs'],
-        //     {
-        //         inputPrefix: self.inputPrefix,
-        //         outputPrefix: self.outputPrefix,
-        //         fedInfos: self.fedInfos,
-        //         dockerInfoMap: self.dockerInfoMap
-        //     }
-        // );
-        // var path = require('path'),
-        //     filendir = require('filendir'),
-        //     fileName = 'docker-compose.yml';
-        //
-        // var deferred = Q.defer();
-        // filendir.writeFile(path.join(self.basePath, fileName), self.dockerFileData, function (err) {
-        //     if (err)
-        //         deferred.reject(err);
-        //     else
-        //         deferred.resolve();
-        // });
-        // return deferred.promise;
+        return self.commandFileData;
+        // return topowrite().then(commandwrite);
     };
 
 
@@ -383,11 +351,11 @@ define([
             nodeObject;
 
 
-        if (typeof WebGMEGlobal !== 'undefined') {
-            var msg = 'You must run this plugin on the server!';
-            self.notify('error', msg);
-            callback(new Error(msg), self.result);
-        }
+        // if (typeof WebGMEGlobal !== 'undefined') {
+        //     var msg = 'You must run this plugin on the server!';
+        //     self.notify('error', msg);
+        //     callback(new Error(msg), self.result);
+        // }
 
         // Using the coreAPI to make changes.
         // nodeObject = self.activeNode;
@@ -426,9 +394,9 @@ define([
             .then(function() {
                 return self.renderTopology();
             })
-            // .then(function() {
-            //     return self.copyArtifacts();
-            // })
+            .then(function() {
+                return self.generateArtifacts();
+            })
             .then(function () {
                 self.result.success = true;
                 self.notify('info', 'Simulation Complete.');
