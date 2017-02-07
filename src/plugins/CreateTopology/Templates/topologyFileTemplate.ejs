@@ -32,6 +32,10 @@ class simpleMultiLinkTopo( Topo ):
     <%- entry.name %> = self.addSwitch('<%- entry.name %>')
     <% }) -%>
 
+    <% nodeLink_listInfo.map(function(entry) { -%>
+    self.addLink(<%- entry.src_name %>,<%- entry.dst_name %>)
+    <% }) -%>
+
 if __name__ == '__main__':
     setLogLevel( 'info' )
     runMultiLink()

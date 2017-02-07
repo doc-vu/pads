@@ -1,0 +1,13 @@
+
+<% hostInfo.map(function(host) {  -%>
+<%- host.name %> python self.addHost('<%- host.name %>')
+<% }) -%>
+
+<% switchInfo.map(function(entry) { -%>
+<%- entry.name %> = self.addSwitch('<%- entry.name %>')
+<% }) -%>
+
+<% nodeLink_listInfo.map(function(entry) { -%>
+self.addLink(<%- entry.src_name %>,<%- entry.dst_name %>)
+<% }) -%>
+

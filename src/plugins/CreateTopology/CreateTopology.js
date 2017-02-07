@@ -116,79 +116,138 @@ define([
         //type = PubSubNetwork
         var self = this;
 
-        if(self.federationModel.SubConnection_list){
-            self.federationModel.SubConnection_list.map((fed) => {
-                self.MobileHosts_listInfo.push({
-                    name: fed.name,
-                    type: 'Mobile'
-                })
-            })
 
-        }
-        if(self.federationModel.BrokerConnection_list){
-            self.federationModel.MobileHost_list.map((fed) => {
-                self.MobileHosts_listInfo.push({
-                    name: fed.name,
-                    type: 'Mobile'
+
+
+        self.nodeLink_listInfo = []
+        if(self.pads_datamodel.SwitchSwitchConnection_list){
+            self.pads_datamodel.SwitchSwitchConnection_list.map((m_switchlink) => {
+                self.nodeLink_listInfo.push({
+                    name: m_switchlink.name,
+                    type: m_switchlink.type,
+                    // src: m_switchlink.src.path,
+                    // dst: m_switchlink.dst.path
+                    src_name: m_switchlink.src.name,
+                    dst_name: m_switchlink.dst.name,
                 })
             })
         }
-        if(self.federationModel.PubConnection_list){
-            self.federationModel.MobileHost_list.map((fed) => {
-                self.MobileHosts_listInfo.push({
-                    name: fed.name,
-                    type: 'Mobile'
+
+        if(self.pads_datamodel.HostSwitchConnection_list){
+            self.pads_datamodel.HostSwitchConnection_list.map((m_hostswitchlink) => {
+                self.nodeLink_listInfo.push({
+                    name: m_hostswitchlink.name,
+                    type: m_hostswitchlink.type,
+                    // src: m_switchlink.src.path,
+                    // dst: m_switchlink.dst.path
+                    src_name: m_hostswitchlink.src.name,
+                    dst_name: m_hostswitchlink.dst.name
                 })
             })
         }
+
+        // if(self.pads_datamodel.BrokerConnection_list){
+        //     self.pads_datamodel.MobileHost_list.map((fed) => {
+        //         self.MobileHosts_listInfo.push({
+        //             name: fed.name,
+        //             type: 'Mobile'
+        //         })
+        //     })
+        // }
+        // if(self.pads_datamodel.PubConnection_list){
+        //     self.pads_datamodel.MobileHost_list.map((fed) => {
+        //         self.MobileHosts_listInfo.push({
+        //             name: fed.name,
+        //             type: 'Mobile'
+        //         })
+        //     })
+        // }
 
         self.hostInfo = [];
 
-        if(self.federationModel.Broker_list){
-            self.federationModel.Broker_list.map((host) => {
-                self.hostInfo.push({
-                    name: host.name,
-                    type: 'Broker'
+        self.brokerInfo = []
+        if(self.pads_datamodel.Broker_list){
+            self.pads_datamodel.Broker_list.map((m_broker) => {
+                self.brokerInfo.push({
+                    name: m_broker.name,
+                    type: m_broker.type
                 })
             })
         }
-        if(self.federationModel.Publisher_list){
-            self.federationModel.Publisher_list.map((host) => {
-                self.hostInfo.push({
-                    name: host.name,
-                    type: 'Publisher'
+        self.publisherInfo = []
+        if(self.pads_datamodel.Publisher_list){
+            self.pads_datamodel.Publisher_list.map((m_pub) => {
+                self.publisherInfo.push({
+                    name: m_pub.name,
+                    type: m_pub.type
                 })
             })
         }
-        if(self.federationModel.Subscriber_list){
-            self.federationModel.Subscriber_list.map((host) => {
-                self.hostInfo.push({
-                    name: host.name,
-                    type: 'Subscriber'
+
+        self.subscriberInfo = []
+        if(self.pads_datamodel.Subscriber_list){
+            self.pads_datamodel.Subscriber_list.map((m_sub) => {
+                self.subscriberInfo.push({
+                    name: m_sub.name,
+                    type:m_sub.type
                 })
             })
         }
         self.switchInfo = [];
-        if(self.federationModel.Switch_list){
-            self.federationModel.Switch_list.map((host) => {
+        if(self.pads_datamodel.SwitchS_list){
+            self.pads_datamodel.SwitchS_list.map((m_switch) => {
                 self.switchInfo.push({
-                    name: host.name,
-                    type: 'Switch'
+                    name: m_switch.name,
+                    type: m_switch.type
                 })
             })
         }
 
+
+        self.hostInfo = [];
+        if(self.pads_datamodel.Host_list){
+            self.pads_datamodel.Host_list.map((m_host) => {
+                self.hostInfo.push({
+                    name: m_host.name,
+                    type: m_host.type
+                })
+            })
+        }
+
+
         console.log(self.switchInfo)
         console.log(self.hostInfo)
+        console.log(self.brokerInfo)
+        console.log(self.subscriberInfo)
+        console.log(self.publisherInfo)
+
 
         self.topologyFileData = ejs.render(
             TEMPLATES['topologyFileTemplate.ejs'],
             {
                 hostInfo: self.hostInfo,
-                switchInfo: self.switchInfo
+                switchInfo: self.switchInfo,
+                brokerInfo: self.brokerInfo,
+                publisherInfo : self.publisherInfo,
+                subsciberInfo: self.subscriberInfo,
+                nodeLink_listInfo: self.nodeLink_listInfo
 
             }
         );
+
+        self.topologyFileData = ejs.render(
+            TEMPLATES['commandFileTemplate.ejs'],
+            {
+                hostInfo: self.hostInfo,
+                switchInfo: self.switchInfo,
+                brokerInfo: self.brokerInfo,
+                publisherInfo : self.publisherInfo,
+                subsciberInfo: self.subscriberInfo,
+                nodeLink_listInfo: self.nodeLink_listInfo
+
+            }
+        );
+
         var x =[];
         //
         var path = require('path'),
@@ -214,7 +273,7 @@ define([
         });
         return deferred.promise;
 
-        // return self.federationModel;
+        // return self.pads_datamodel;
         // self.dockerFileData = ejs.render(
         //     TEMPLATES['topologyFileTemplate.ejs'],
         //     {
@@ -291,9 +350,9 @@ define([
 
 
         return loader.loadModel(self.core, modelNode)
-            .then(function (federationModel) {
-                console.log(federationModel)
-                self.federationModel = federationModel;
+            .then(function (pads_datamodel) {
+                console.log(pads_datamodel)
+                self.pads_datamodel = pads_datamodel;
             })
             .then(function() {
                 return self.renderTopology();
