@@ -9,6 +9,8 @@ from mininet.cli import CLI
 from mininet.log import setLogLevel
 from mininet.net import Mininet
 from mininet.topo import Topo
+from mininet.link import TCLink, TCIntf, Link
+
 
 def runMultiLink():
     "Create and run multiple link network"
@@ -33,7 +35,7 @@ class simpleMultiLinkTopo( Topo ):
     <% }) -%>
 
     <% nodeLink_listInfo.map(function(entry) { -%>
-    self.addLink(<%- entry.src_name %>,<%- entry.dst_name %>,bw=<%- entry.Bandwidth_Mbps%>, delay ='<%- entry.Delay_ms%>ms' , loss=<%- entry.Loss%>)
+    self.addLink(<%- entry.src_name %>,<%- entry.dst_name %>,intf=TCIntf, params1 = { 'bw': <%- entry.Bandwidth_Mbps%> , 'delay' : '<%- entry.Delay_ms%>ms' , 'loss' : <%- entry.Loss%>}, params2 = { 'bw': <%- entry.Bandwidth_Mbps%> , 'delay' : '<%- entry.Delay_ms%>ms' , 'loss' : <%- entry.Loss%>})
     <% }) -%>
 
 if __name__ == '__main__':

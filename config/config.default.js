@@ -1,9 +1,9 @@
 'use strict';
 
-var config = require('./config.webgme'),
+// var config = require('./config.webgme'),
+var config = require('./config.base.js'),
     validateConfig = require('webgme/config/validator');
 
-config.visualization.svgDirs = ['./icons/png'];
 
 // config.client.log.level = 'info';
 
