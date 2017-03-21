@@ -28,5 +28,18 @@
     "stream": "0.0.2",
     "tar": "^2.2.1",
     "unzip": "^0.1.11"
-  }
+  },
+  "keywords": [
+    "webgme",
+    "PADS_APP",
+    "webgme-app"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/doc-vu/pads.git"
+  },
+   "author": {
+    "name": "Yogesh",
+    "url": "https://webgme.org"
+  },
 }
