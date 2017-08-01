@@ -17,8 +17,19 @@ def runMultiLink():
     topo = simpleMultiLinkTopo( n=2 )
     net = Mininet( topo=topo )
     net.start()
-    CLI( net )
-    net.stop()
+    return net
+
+
+def runApps(net):
+    "Run cmds in command.txt"
+    print "Running applications"
+    with open("command.txt") as f:
+        for line in f:
+            splitedLine = line.split(' ', 1)
+            print splitedLine[0]
+            host = net.get(splitedLine[0])
+            print splitedLine[1]
+            host.cmd(splitedLine[1])
 
 class simpleMultiLinkTopo( Topo ):
     "Simple topology with multiple links"
@@ -40,4 +51,5 @@ class simpleMultiLinkTopo( Topo ):
 
 if __name__ == '__main__':
     setLogLevel( 'info' )
-    runMultiLink()
+    net = runMultiLink()
+    // runApps(net)
