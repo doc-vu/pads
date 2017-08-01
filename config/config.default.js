@@ -1,7 +1,7 @@
 'use strict';
 
-// var config = require('./config.webgme'),
-var config = require('./config.base.js'),
+var config = require('./config.webgme'),
+//var config = require('./config.base.js'),
     validateConfig = require('webgme/config/validator');
 
 
