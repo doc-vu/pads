@@ -14,7 +14,16 @@ config.visualization.decoratorPaths.push('./src/decorators');
 
 
 
+// Plugins
+config.plugin.allowServerExecution = true;
 
+
+// Seeds
+config.seedProjects.enable = true;
+config.seedProjects.basePaths = ["./seeds"]
+
+// Icons
+config.visualization.svgDirs = ['./icons/png'];
 
 
 
