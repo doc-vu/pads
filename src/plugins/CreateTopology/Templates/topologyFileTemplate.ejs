@@ -10,6 +10,7 @@ from mininet.log import setLogLevel
 from mininet.net import Mininet
 from mininet.topo import Topo
 from mininet.link import TCLink, TCIntf, Link
+from time import sleep
 
 
 def runMultiLink():
@@ -52,4 +53,7 @@ class simpleMultiLinkTopo( Topo ):
 if __name__ == '__main__':
     setLogLevel( 'info' )
     net = runMultiLink()
-    // runApps(net)
+    #runApps(net)
+    #sleep(30)
+    CLI( net )
+    net.stop()
