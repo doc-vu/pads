@@ -1,11 +1,17 @@
 <% publisherInfo.map(function(entry) {  -%>
-<%- AppHostList[entry.path] %>  <%- entry.scriptName%> <%- entry.args %> &>./result/<%- AppHostList[entry.path] %><%-entry.name%>.log
+<% for(i=1; i<= entry.instances; i++){ -%>
+<%- AppHostList[entry.path] %>  <%- entry.scriptName%> <%- entry.args %> &>./result/<%- AppHostList[entry.path] %><%-entry.name%><%- i%>.log
+<% } -%>
 <% }) -%>
 
 <% brokerInfo.map(function(entry) { -%>
-<%- AppHostList[entry.path] %>  <%- entry.scriptName%> <%- entry.args %> &>./result/<%- AppHostList[entry.path] %><%-entry.name%>.log
+<% for(i=1; i<= entry.instances; i++){ -%>
+<%- AppHostList[entry.path] %>  <%- entry.scriptName%> <%- entry.args %> &>./result/<%- AppHostList[entry.path] %><%-entry.name%><%- i%>.log
+<% } -%>
 <% }) -%>
 
 <% subscriberInfo.map(function(entry) { -%>
-<%- AppHostList[entry.path] %>  <%- entry.scriptName%> <%- entry.args %> &>./result/<%- AppHostList[entry.path] %><%-entry.name%>.log
+<% for(i=1; i<= entry.instances; i++){ -%>
+<%- AppHostList[entry.path] %>  <%- entry.scriptName%> <%- entry.args %> &>./result/<%- AppHostList[entry.path] %><%-entry.name%><%- i%>.log
+<% } -%>
 <% }) -%>

@@ -196,6 +196,7 @@ define([
         if(self.pads_datamodel.Host_list){
             self.pads_datamodel.Host_list.map((m_host) => {
                 self.hostInfo.push({
+                    ip_addr:m_host.ip_addr,
                     name: m_host.name,
                     type: m_host.type,
                     app_path: []
@@ -230,6 +231,7 @@ define([
         if(self.pads_datamodel.BrokerApp_list){
             self.pads_datamodel.BrokerApp_list.map((m_broker) => {
                 self.brokerInfo.push({
+                    instances:m_broker.instances,
                     name: m_broker.name,
                     type: m_broker.type,
                     path:m_broker.path,
@@ -242,6 +244,7 @@ define([
         if(self.pads_datamodel.PublisherApp_list){
             self.pads_datamodel.PublisherApp_list.map((m_pub) => {
                 self.publisherInfo.push({
+                    instances:m_pub.instances,
                     name: m_pub.name,
                     type: m_pub.type,
                     path: m_pub.path,
@@ -256,6 +259,7 @@ define([
         if(self.pads_datamodel.SubsriberApp_list){
             self.pads_datamodel.SubsriberApp_list.map((m_sub) => {
                 self.subscriberInfo.push({
+                    instances:m_sub.instances,
                     name: m_sub.name,
                     type:m_sub.type,
                     path: m_sub.path,

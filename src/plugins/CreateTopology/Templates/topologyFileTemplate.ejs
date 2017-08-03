@@ -38,7 +38,7 @@ class simpleMultiLinkTopo( Topo ):
         Topo.__init__( self, **kwargs )
 
     <% hostInfo.map(function(host) {  -%>
-    <%- host.name %> = self.addHost('<%- host.name %>')
+    <%- host.name %> = self.addHost('<%- host.name %>', ip='<%- host.ip_addr %>')
     <% }) -%>
 
     <% switchInfo.map(function(entry) { -%>
