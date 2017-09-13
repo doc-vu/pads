@@ -8,6 +8,34 @@ var config = require('./config.webgme'),
 // config.client.log.level = 'info';
 
 
+config.plugin.basePaths.push('src/common');
+config.visualization.decoratorPaths.push('./src/decorators');
+
+
+
+// Plugins
+config.plugin.allowServerExecution = true;
+
+
+// Seeds
+config.seedProjects.enable = true;
+config.seedProjects.basePaths = ["./seeds"]
+
+// Icons
+config.visualization.svgDirs = ['./icons/png'];
+
+
+
+// Visualizer descriptors
+
+// Add requirejs paths
+config.requirejsPaths['pads_app'] = './src/common';
+config.requirejsPaths['CreateTopology'] = './src/plugins/CreateTopology';
+
+config.requirejsPaths['mrMininetTopo'] = './src/plugins/mrMininetTopo';
+
+
+
 
 
 // Add/overwrite any additional settings here

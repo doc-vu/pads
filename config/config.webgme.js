@@ -9,29 +9,15 @@ var config = require('webgme/config/config.default'),
 // The paths can be loaded from the webgme-setup.json
 config.plugin.basePaths.push(__dirname + '/../src/plugins');
 
-config.plugin.basePaths.push('src/common');
-config.visualization.decoratorPaths.push('./src/decorators');
 
 
 
-// Plugins
-config.plugin.allowServerExecution = true;
-
-
-// Seeds
-config.seedProjects.enable = true;
-config.seedProjects.basePaths = ["./seeds"]
-
-// Icons
-config.visualization.svgDirs = ['./icons/png'];
 
 
 
 // Visualizer descriptors
 
 // Add requirejs paths
-config.requirejsPaths['pads_app'] = './src/common';
-config.requirejsPaths['CreateTopology'] = './src/plugins/CreateTopology';
 
 
 

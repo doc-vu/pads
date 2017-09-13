@@ -4,6 +4,10 @@
       "CreateTopology": {
         "src": "src/plugins/CreateTopology",
         "test": "test/plugins/CreateTopology"
+      },
+      "mrMininetTopo": {
+        "src": "src/plugins/mrMininetTopo",
+        "test": "test/plugins/mrMininetTopo"
       }
     },
     "addons": {},

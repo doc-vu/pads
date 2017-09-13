@@ -1,0 +1,25 @@
+<% mapCount=0 -%>
+<% mapInfo.map(function(entry) { -%>
+<% mapCount=mapCount+entry.instances -%>
+<% }) -%>
+<% reduceCount=0 -%>
+<% reduceInfo.map(function(entry) { -%>
+<% reduceCount=reduceCount+entry.instances -%>
+<% }) -%>
+<% controllerInfo.map(function(entry) { -%>
+<%- AppHostList[entry.path] %> <%- entry.scriptName%> <%- entry.args %> -m <%- mapCount %> -r <%- reduceCount %> <%- entry.sortingFileName %> &> ./result/<%- AppHostList[entry.path] %><%-entry.name%><%- i%>.log &
+<% }) -%>
+<% mapInstance=0 -%>
+<% mapInfo.map(function(entry) { -%>
+<% for(i=1; i<= entry.instances; i++){ -%>
+<%- AppHostList[entry.path] %> <%- entry.scriptName%> <%- mapInstance%> <%- entry.controllerIP %> <%- entry.args %> &> ./result/<%- AppHostList[entry.path] %><%-entry.name%><%- i%>.log &
+<% mapInstance=mapInstance+1 -%>
+<% } -%>
+<% }) -%>
+<% redInstance=0 -%>
+<% reduceInfo.map(function(entry) {  -%>
+<% for(i=1; i<= entry.instances; i++){ -%>
+<%- AppHostList[entry.path] %> <%- entry.scriptName%> <%- redInstance%> <%- entry.controllerIP %> <%- entry.args %> &> ./result/<%- AppHostList[entry.path] %><%-entry.name%><%- i%>.log &
+<% redInstance = redInstance + 1 -%>
+<% } -%>
+<% }) -%>
