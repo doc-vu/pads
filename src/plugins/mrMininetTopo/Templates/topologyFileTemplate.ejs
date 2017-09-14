@@ -54,7 +54,7 @@ class simpleMultiLinkTopo( Topo ):
 if __name__ == '__main__':
     setLogLevel( 'info' )
     net = runMultiLink()
-    #runApps(net)
-    #sleep(30)
-    CLI( net )
+    runApps(net)
+    sleep(80)
+    #CLI( net )
     net.stop()
